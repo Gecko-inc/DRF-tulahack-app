@@ -7,7 +7,7 @@ from config.views import get_upload_to
 class Section(models.Model):
     title = models.CharField(_("Заголовок"), max_length=130)
     sort = models.IntegerField(_("Сортировка"), default=0)
-    is_active = models.BooleanField(_("Активна"), default=False)
+    is_active = models.BooleanField(_("Активна"), default=True)
 
     class Meta:
         verbose_name = _("Раздел")
@@ -23,7 +23,7 @@ class Article(models.Model):
     section = models.ForeignKey(Section, verbose_name=_("Раздел"), on_delete=models.SET_NULL, null=True,
                                 related_name="articles", blank=True)
     sort = models.IntegerField(_("Сортировка"), default=0)
-    is_active = models.BooleanField(_("Активна"), default=False)
+    is_active = models.BooleanField(_("Активна"), default=True)
 
     class Meta:
         ordering = ['-sort', ]

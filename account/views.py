@@ -1,44 +1,111 @@
-from django.contrib.auth.views import LoginView
-from django.shortcuts import redirect
-from django.views.generic import FormView
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework.generics import ListCreateAPIView, ListAPIView
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from config.views import common_context
-from .forms import UserRegistrationForm
-from .models import UserStatus
+from section.models import Article
+from .models import MobileUser, Bookmark
 
+from django.utils.translation import gettext_lazy as _
 
-class Registration(FormView):
-    template_name = "registration/register.html"
-    form_class = UserRegistrationForm
-    success_url = "/login/"
-
-    def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect("/")
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(Registration, self).get_context_data(**kwargs)
-        context.update(common_context())
-
-        return context
-
-    def form_valid(self, form):
-        new_user = form.save(commit=False)
-        new_user.set_password(form.cleaned_data['password'])
-        new_user.status = UserStatus.objects.first()
-        new_user.save()
-        return super().form_valid(form)
+from .serializer import BookmarkSerializer, MobileUserSerializer
 
 
-class Login(LoginView):
-    def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect("/")
-        return super().get(request, *args, **kwargs)
+class BookmarkDeleteView(APIView):
+    @swagger_auto_schema(
+        tags=['Bookmark'],
+        manual_parameters=[
+            openapi.Parameter('mark_id', openapi.IN_PATH, description=_('Идентификатор закладки.'),
+                              required=True,
+                              type=openapi.TYPE_INTEGER)
+        ]
+    )
+    def delete(self, request, **kwargs):
+        try:
+            Bookmark.objects.get(id=kwargs.get("mark_id")).delete()
+        except Bookmark.DoesNotExist:
+            pass
+        return Response(status=200)
 
-    def get_context_data(self, **kwargs):
-        context = super(Login, self).get_context_data(**kwargs)
-        context.update(common_context())
 
-        return context
+class BookmarkListView(ListAPIView):
+    """
+      Получени закладок пользователя
+    """
+
+    @swagger_auto_schema(tags=['Bookmark'], manual_parameters=[
+        openapi.Parameter('token', openapi.IN_QUERY, description=_('Токен'),
+                          required=True, type=openapi.TYPE_STRING),
+    ],
+                         )
+    def get(self, request):
+        return Response(BookmarkSerializer(
+            Bookmark.objects.filter(user__token=request.GET.get("token")), many=True).data)
+
+
+class UserView(APIView):
+    """
+      Получени информации о пользователе
+    """
+
+    @swagger_auto_schema(tags=['User'], manual_parameters=[
+        openapi.Parameter('token', openapi.IN_QUERY, description=_('Токен'),
+                          required=True, type=openapi.TYPE_STRING),
+    ],
+                         )
+    def get(self, request):
+        try:
+            queryset = MobileUser.objects.get(token=request.GET.get("token"))
+            return Response(MobileUserSerializer(queryset, many=False).data)
+        except MobileUser.DoesNotExist:
+            return Response(status=404)
+
+
+class BookmarkAPIView(APIView):
+
+    @swagger_auto_schema(tags=['Bookmark'],
+                         request_body=openapi.Schema(
+                             type=openapi.TYPE_OBJECT,
+                             required=['token', "article_id"],
+                             properties={
+                                 'token': openapi.Schema(type=openapi.TYPE_STRING),
+                                 'article_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                             },
+                         ),
+                         )
+    def post(self, request, *args, **kwargs):
+        """
+          Создание закладки
+        """
+        data = request.data
+        try:
+            Bookmark.objects.create(
+                user=MobileUser.objects.get(token=data.get("token")),
+                article=Article.objects.get(id=data.get("article_id"))
+            )
+        except MobileUser.DoesNotExist:
+            return Response(status=404)
+        except Article.DoesNotExist:
+            return Response(status=404)
+        return Response(status=201)
+
+
+class UserAPIView(ListCreateAPIView):
+    http_method_names = ['post', ]
+    serializer_class = MobileUserSerializer
+    queryset = MobileUser.objects.all()
+    parser_classes = (MultiPartParser,)
+
+    @swagger_auto_schema(tags=['User'],
+                         request_body=MobileUserSerializer,
+                         manual_parameters=[
+                             openapi.Parameter('token', openapi.IN_FORM, description=_('Токен'),
+                                               required=True, type=openapi.TYPE_STRING),
+                         ], )
+    def post(self, request, *args, **kwargs):
+        """
+          Создание пользователя по уникальному ключу
+        """
+        return self.create(request, *args, **kwargs)

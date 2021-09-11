@@ -43,8 +43,8 @@ urlpatterns += i18n_patterns(
 
 urlpatterns += [
         path('api/', RedirectView.as_view(url='/swagger/', permanent=True)),
-        path('', RedirectView.as_view(url='/swagger/', permanent=True)),
-        path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+        path('', RedirectView.as_view(url='/docs/', permanent=True)),
+        path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     ]
 
 if DEBUG:

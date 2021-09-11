@@ -1,36 +1,41 @@
-from django.http import Http404
-from django.views.generic import TemplateView
-
-from config.views import common_context
-from .models import Section, Article
-
-
-class Index(TemplateView):
-    template_name = 'page/index.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(Index, self).get_context_data(**kwargs)
-        context.update(common_context())
-
-        return context
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.utils.translation import gettext_lazy as _
+from .models import Section
+from .serializer import SectionSerializer
 
 
-class SectionView(TemplateView):
-    section = None
+class SectionListView(ListAPIView):
+    """
+      Получение списка всех разделов
+    """
+    @swagger_auto_schema(
+        tags=['Section']
+    )
+    def get(self, request, **kwargs):
+        queryset = Section.objects.filter(is_active=True)
+        return Response(SectionSerializer(queryset, many=True).data)
 
-    def get(self, request, *args, **kwargs):
+
+class SectionDetailView(APIView):
+    """
+      Получение раздела по ID
+    """
+
+    @swagger_auto_schema(
+        tags=['Section'],
+        manual_parameters=[
+            openapi.Parameter('section_id', openapi.IN_PATH, description=_('Идентификатор раздела.'),
+                              required=True,
+                              type=openapi.TYPE_INTEGER)
+        ]
+    )
+    def get(self, request, **kwargs):
         try:
-            self.section = Section.objects.get(slug=kwargs.get("slug"), is_active=True)
+            queryset = Section.objects.get(is_active=True, id=kwargs.get("section_id"))
+            return Response(SectionSerializer(queryset, many=False).data)
         except Section.DoesNotExist:
-            raise Http404
-        except Section.MultipleObjectsReturned:
-            self.section = Section.objects.filter(slug=kwargs.get("slug"), is_active=True).first()
-
-        return super(SectionView, self).get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(SectionView, self).get_context_data(**kwargs)
-        context.update(common_context())
-        context['section'] = self.section
-
-        return context
+            return Response(status=404)
