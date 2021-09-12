@@ -1,0 +1,11 @@
+{
+  "apps": [
+    {
+      "name": "system-process",
+      "args": "runserver 0:8000",
+      "script": "manage.py",
+      "exec_mode": "fork",
+      "exec_interpreter": "env/bin/python"
+    }
+  ]
+}
