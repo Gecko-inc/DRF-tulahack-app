@@ -17,5 +17,5 @@ class MobileUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = MobileUser
         fields = [
-            "id",
+            "token",
         ]
