@@ -2,7 +2,7 @@
   "apps": [
     {
       "name": "system-process",
-      "args": "runserver 0:8000",
+      "args": "runserver 0:1337",
       "script": "manage.py",
       "exec_mode": "fork",
       "exec_interpreter": "env/bin/python"
