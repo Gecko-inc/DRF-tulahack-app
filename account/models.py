@@ -28,6 +28,7 @@ class User(AbstractUser, UserManager):
 
 class MobileUser(models.Model):
     token = models.CharField(_("Токен"), max_length=130, unique=True)
+    is_premium = models.BooleanField(_("Подписка"), default=0)
     date_joined = models.DateTimeField(_('Дата регистрации'), default=timezone.now)
 
     class Meta:

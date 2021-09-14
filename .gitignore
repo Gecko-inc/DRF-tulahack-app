@@ -10,3 +10,4 @@ cache
 /media/*
 env
 venv
+test.py

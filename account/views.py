@@ -1,10 +1,12 @@
+import random
+
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from rest_framework.generics import ListCreateAPIView, ListAPIView
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from config.views import generate_token, get_qiwi_url, check_qiwi_pay
 from section.models import Article
 from .models import MobileUser, Bookmark
 
@@ -92,20 +94,59 @@ class BookmarkAPIView(APIView):
         return Response(status=201)
 
 
-class UserAPIView(ListCreateAPIView):
-    http_method_names = ['post', ]
-    serializer_class = MobileUserSerializer
-    queryset = MobileUser.objects.all()
-    parser_classes = (MultiPartParser,)
+class UserAPIView(APIView):
 
-    @swagger_auto_schema(tags=['User'],
-                         request_body=MobileUserSerializer,
-                         manual_parameters=[
-                             openapi.Parameter('token', openapi.IN_FORM, description=_('Токен'),
-                                               required=True, type=openapi.TYPE_STRING),
-                         ], )
+    @swagger_auto_schema(tags=['User'])
     def post(self, request, *args, **kwargs):
         """
           Создание пользователя по уникальному ключу
         """
-        return self.create(request, *args, **kwargs)
+        headers = request.headers
+        unique_arg = f"""
+        {headers.get('Host')}{headers.get('Origin')}{headers.get('Sec-Ch-Ua-Platform')}{random.randint(0, 21)}
+        """
+        token = generate_token(unique_arg=unique_arg)
+        MobileUser.objects.create(
+            token=token
+        )
+        return Response({
+            "token": token
+        })
+
+
+class PayUrl(APIView):
+
+    @swagger_auto_schema(tags=['Pay'], manual_parameters=[
+        openapi.Parameter('token', openapi.IN_QUERY, description=_('Токен пользователя.'),
+                          required=True,
+                          type=openapi.TYPE_STRING)
+
+    ])
+    def get(self, request):
+        return Response({
+            "url": get_qiwi_url(request.GET.get("token"))
+        })
+
+
+class CheckPay(APIView):
+
+    @swagger_auto_schema(tags=['Pay'], manual_parameters=[
+        openapi.Parameter('token', openapi.IN_QUERY, description=_('Токен пользователя.'),
+                          required=True,
+                          type=openapi.TYPE_STRING)
+
+    ])
+    def get(self, request):
+        try:
+            user = MobileUser.objects.get(token=request.GET.get("token"))
+            if check_qiwi_pay(request.GET.get("token")):
+                user.is_premium = check_qiwi_pay(request.GET.get("token"))
+                user.save()
+            return Response({
+                "pay": check_qiwi_pay(request.GET.get("token"))
+            })
+        except MobileUser.DoesNotExist:
+            return Response({
+                "status": 404,
+                "error": "User does not exist"
+            })

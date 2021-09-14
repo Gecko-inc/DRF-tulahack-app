@@ -18,4 +18,5 @@ class MobileUserSerializer(serializers.ModelSerializer):
         model = MobileUser
         fields = [
             "token",
+            "is_premium",
         ]
