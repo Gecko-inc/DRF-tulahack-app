@@ -7,6 +7,7 @@ class ArticleMediaSerializer(serializers.ModelSerializer):
         model = ArticleMedia
         fields = [
             'text',
+            'additional_text',
             'image',
         ]
 
