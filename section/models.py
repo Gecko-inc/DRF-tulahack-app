@@ -40,6 +40,7 @@ class ArticleMedia(models.Model):
     article = models.ForeignKey(Article, verbose_name=_("Статья"), on_delete=models.CASCADE, related_name="detail")
     text = models.TextField(_("Текст"), null=True)
     additional_text = models.TextField("Сноска", blank=True, null=True)
+    word = models.TextField("Слова", blank=True, null=True)
     sort = models.IntegerField(_("Сортировка"), default=0)
     image = models.ImageField(_("Изображение"), upload_to=get_upload_to, blank=True, null=True)
 
