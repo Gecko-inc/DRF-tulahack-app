@@ -12,12 +12,15 @@ class SectionListView(ListAPIView):
     """
       Получение списка всех разделов
     """
+    queryset = Section
+    serializer_class = SectionSerializer
+
     @swagger_auto_schema(
         tags=['Section']
     )
     def get(self, request, **kwargs):
-        queryset = Section.objects.filter(is_active=True)
-        return Response(SectionSerializer(queryset, many=True).data)
+        queryset = self.queryset.objects.filter(is_active=True)
+        return Response(self.serializer_class(queryset, many=True).data)
 
 
 class SectionDetailView(APIView):
