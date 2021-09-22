@@ -40,15 +40,16 @@ class Command(BaseCommand):
                 "title": section['title'],
                 "articles": [
                     {
-                        "id": article['key'],
-                        "number": article['number'],
+                        "id": "",
+                        # "number": article['number'],
                         "title": article['articleTitle'],
-                        "section_id": section['id'],
+                        "section_id": section['id'] + 1,
                         "images": [
                             {
                                 "id": "",
                                 "text": image.get('text') or "",
-                                "image": image.get('img') or ""
+                                "image": image.get('img') or "",
+                                "article_id": article['key']
                             }
                             for image in article['contentText']
                         ]
@@ -67,6 +68,12 @@ class Command(BaseCommand):
             media = [item for sub_media in media_list for item in sub_media]  # Список словарей
 
             id_counter = 1
+
+            for item in articles:
+                item['id'] = id_counter
+                id_counter += 1
+
+            id_counter = 1
             for item in media:
                 item['id'] = id_counter
                 id_counter += 1
@@ -79,7 +86,7 @@ class Command(BaseCommand):
 
             existing_sections_titles = {item.title: item for item in existing_sections}
             existing_articles_titles = {item.title: item for item in existing_articles}
-            existing_media_titles = {item.title: item for item in existing_media}
+            existing_media_titles = {item.text: item for item in existing_media}
 
             for section in sections:
                 if section['title'] in existing_sections_titles:
@@ -92,6 +99,7 @@ class Command(BaseCommand):
             for article in articles:
                 if article['title'] in existing_articles_titles:
                     instance = existing_articles_titles[article['title']]
+                    # instance.number = article['number']
                     instance.title = article['title']
                     to_update_articles.append(instance)
                 else:
@@ -106,9 +114,23 @@ class Command(BaseCommand):
                 else:
                     to_create_media.append(item)
 
+            # Batch size for sqlite3 is 999, setting to 100 (found by practice)
+
             if to_update_sections:
-                Section.objects.bulk_update(to_update_sections, ['title'])
+                Section.objects.bulk_update(to_update_sections, ['title'], batch_size=100)
 
             if to_create_sections:
                 sections = [Section(**section) for section in to_create_sections]
-                # Section.objects.bulk_create(sections)
+                Section.objects.bulk_create(sections, batch_size=100)
+
+            if to_update_articles:
+                Article.objects.bulk_update(to_update_articles, ['title'], batch_size=100)
+            if to_create_articles:
+                articles = [Article(**article) for article in to_create_articles]
+                Article.objects.bulk_create(articles, batch_size=100)
+
+            if to_update_media:
+                ArticleMedia.objects.bulk_update(to_update_media, ['text', 'image'], batch_size=100)
+            if to_create_media:
+                media = [ArticleMedia(**media) for media in to_create_media]
+                ArticleMedia.objects.bulk_create(media, batch_size=100)

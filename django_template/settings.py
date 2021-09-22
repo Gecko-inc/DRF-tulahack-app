@@ -79,7 +79,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_template.wsgi.application'
 
-
 # Настройки базы данных
 DATABASES = {
     'default': {
