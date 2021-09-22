@@ -34,7 +34,7 @@ class BookmarkDeleteView(APIView):
 
 class BookmarkListView(ListAPIView):
     """
-      Получени закладок пользователя
+      Получение закладок пользователя
     """
 
     @swagger_auto_schema(tags=['Bookmark'], manual_parameters=[
@@ -49,7 +49,7 @@ class BookmarkListView(ListAPIView):
 
 class UserView(APIView):
     """
-      Получени информации о пользователе
+      Получение информации о пользователе
     """
 
     @swagger_auto_schema(tags=['User'], manual_parameters=[
