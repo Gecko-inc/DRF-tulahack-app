@@ -1,11 +1,16 @@
 import json
 import os
-from pprint import pprint
+from django.core.files import File
 
 from django.core.management import BaseCommand
 
 from django_template import settings
 from section.models import Article, Section, ArticleMedia
+
+
+def get_image_path(image_name: str) -> str:
+    image_path = f"{settings.BASE_DIR}/section/management/commands/image/{image_name}"if image_name else ""
+    return image_path.replace("img19_", "img18_")
 
 
 class Command(BaseCommand):
@@ -16,7 +21,7 @@ class Command(BaseCommand):
     help = "Импорт разделов/статей/картинок в базу данных"
 
     def add_arguments(self, parser):
-        parser.add_argument("--file", nargs=1, default="chapter.json")
+        parser.add_argument("--file", nargs=1, default=f"{settings.BASE_DIR}/section/management/commands/chapter.json")
 
     def handle(self, *args, **options):
         data, to_create_sections, to_update_sections = [], [], []
@@ -48,7 +53,8 @@ class Command(BaseCommand):
                             {
                                 "id": "",
                                 "text": image.get('text') or "",
-                                "image": image.get('img') or "",
+                                "image": get_image_path(image.get("img")),
+                                # "image": f"{settings.BASE_DIR}/section/management/commands/image/{image.get('img')}".replace("img19_", "img18_") if image.get('img') else "",
                                 "article_id": article['key']
                             }
                             for image in article['contentText']
@@ -109,6 +115,7 @@ class Command(BaseCommand):
                 if item['text'] in existing_media_titles:
                     instance = existing_media_titles[item['text']]
                     instance.text = item.get('text')
+                    print(item.get('image'))
                     instance.image = item.get('image')
                     to_update_media.append(instance)
                 else:
@@ -132,5 +139,12 @@ class Command(BaseCommand):
             if to_update_media:
                 ArticleMedia.objects.bulk_update(to_update_media, ['text', 'image'], batch_size=100)
             if to_create_media:
-                media = [ArticleMedia(**media) for media in to_create_media]
+                media = [ArticleMedia(
+                    id=media.get("id"),
+                    article_id=media.get("article_id"),
+                    text=media.get("text"),
+                    image=File(file=open(media.get("image"), "rb"),
+                               name=media.get("image").split('/')[-1]) if media.get("image") and os.path.exists(
+                        media.get("image")) else None,
+                ) for media in to_create_media]
                 ArticleMedia.objects.bulk_create(media, batch_size=100)
