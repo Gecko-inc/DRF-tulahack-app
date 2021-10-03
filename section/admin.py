@@ -11,6 +11,12 @@ class ArticleMediaAdmin(admin.StackedInline):
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
     inlines = [ArticleMediaAdmin]
+    list_display = ['id', 'title', 'media_count']
+
+    def media_count(self, obj):
+        return len(obj.detail.all())
+
+    media_count.short_description = "Вложений"
 
 
 @admin.register(Section)

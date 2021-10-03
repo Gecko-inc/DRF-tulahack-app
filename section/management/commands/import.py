@@ -46,7 +46,6 @@ class Command(BaseCommand):
                 "articles": [
                     {
                         "id": "",
-                        # "number": article['number'],
                         "title": article['articleTitle'],
                         "section_id": section['id'] + 1,
                         "images": [
@@ -54,8 +53,7 @@ class Command(BaseCommand):
                                 "id": "",
                                 "text": image.get('text') or "",
                                 "image": get_image_path(image.get("img")),
-                                # "image": f"{settings.BASE_DIR}/section/management/commands/image/{image.get('img')}".replace("img19_", "img18_") if image.get('img') else "",
-                                "article_id": article['key']
+                                "article_id": article['articleTitle']
                             }
                             for image in article['contentText']
                         ]
@@ -105,7 +103,6 @@ class Command(BaseCommand):
             for article in articles:
                 if article['title'] in existing_articles_titles:
                     instance = existing_articles_titles[article['title']]
-                    # instance.number = article['number']
                     instance.title = article['title']
                     to_update_articles.append(instance)
                 else:
@@ -115,7 +112,6 @@ class Command(BaseCommand):
                 if item['text'] in existing_media_titles:
                     instance = existing_media_titles[item['text']]
                     instance.text = item.get('text')
-                    print(item.get('image'))
                     instance.image = item.get('image')
                     to_update_media.append(instance)
                 else:
@@ -139,12 +135,15 @@ class Command(BaseCommand):
             if to_update_media:
                 ArticleMedia.objects.bulk_update(to_update_media, ['text', 'image'], batch_size=100)
             if to_create_media:
-                media = [ArticleMedia(
-                    id=media.get("id"),
-                    article_id=media.get("article_id"),
-                    text=media.get("text"),
-                    image=File(file=open(media.get("image"), "rb"),
-                               name=media.get("image").split('/')[-1]) if media.get("image") and os.path.exists(
-                        media.get("image")) else None,
-                ) for media in to_create_media]
-                ArticleMedia.objects.bulk_create(media, batch_size=100)
+                for media in to_create_media:
+                    try:
+                        ArticleMedia.objects.create(
+                            id=media.get("id"),
+                            article_id=Article.objects.get(title=media.get("article_id")).id,
+                            text=media.get("text"),
+                            image=File(file=open(media.get("image"), "rb"),
+                                       name=media.get("image").split('/')[-1]) if media.get("image") and os.path.exists(
+                                media.get("image")) else None,
+                        )
+                    except Exception as e:
+                        print(e)
