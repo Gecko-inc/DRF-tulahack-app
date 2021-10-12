@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from ckeditor_uploader.fields import RichTextUploadingField
 
 from config.views import get_upload_to
 
@@ -43,6 +44,7 @@ class ArticleMedia(models.Model):
     word = models.TextField("Слова", blank=True, null=True)
     sort = models.IntegerField(_("Сортировка"), default=0)
     image = models.ImageField(_("Изображение"), upload_to=get_upload_to, blank=True, null=True)
+    rich_text = RichTextUploadingField(blank=True, null=True)
 
     class Meta:
         ordering = ['-sort', ]
