@@ -11,12 +11,15 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+import sync.views
 from .settings import DEBUG
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     path('login/', auth_views.LoginView.as_view(), name='login'),
+
+    path('section-special/<int:pk>/', sync.views.SectionRichFormatView.as_view())
 ]
 
 schema_view = get_schema_view(
