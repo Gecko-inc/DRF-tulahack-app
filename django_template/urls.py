@@ -18,8 +18,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     path('login/', auth_views.LoginView.as_view(), name='login'),
-
-    path('section-special/<int:pk>/', sync.views.SectionRichFormatView.as_view())
 ]
 
 schema_view = get_schema_view(
