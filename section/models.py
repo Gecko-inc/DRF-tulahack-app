@@ -45,6 +45,7 @@ class ArticleMedia(models.Model):
     sort = models.IntegerField(_("Сортировка"), default=0)
     image = models.ImageField(_("Изображение"), upload_to=get_upload_to, blank=True, null=True)
     rich_text = RichTextUploadingField(blank=True, default=' ')
+    render = models.TextField("HTML для приложения", blank=True, default=" ")
 
     class Meta:
         ordering = ['-sort', ]
@@ -53,3 +54,7 @@ class ArticleMedia(models.Model):
 
     def __str__(self):
         return self.text
+
+    def save(self, *args, **kwargs):
+        self.render = self.rich_text
+        super(ArticleMedia, self).save(*args, **kwargs)
