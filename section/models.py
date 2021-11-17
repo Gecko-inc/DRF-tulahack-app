@@ -58,7 +58,8 @@ class ArticleMedia(models.Model):
     @property
     def rendered(self) -> str:
         import re
-        return "".join(re.split("[\r\n]+", self.render))
+        return "".join(re.sub("</p>[\r\n]+<p", "</p><p", self.render))
+        # "".join(re.split("[\r\n]+", self.render))  # 100% рабочий вариант
         # return self.render.replace("<p> ", "<p>").replace(" </p>", "</p>").replace(" <p>", "<p>").replace("</p> ", "</p>")
 
     def save(self, *args, **kwargs):
