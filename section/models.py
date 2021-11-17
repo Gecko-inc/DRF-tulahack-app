@@ -57,8 +57,9 @@ class ArticleMedia(models.Model):
 
     @property
     def rendered(self) -> str:
-        return self.render.replace("<p> ", "<p>").replace(" </p>", "</p>").replace(" <p>", "<p>").replace("</p> ",
-                                                                                                          "</p>")
+        import re
+        return "".join(re.split("[\r\n]+", self.render))
+        # return self.render.replace("<p> ", "<p>").replace(" </p>", "</p>").replace(" <p>", "<p>").replace("</p> ", "</p>")
 
     def save(self, *args, **kwargs):
         self.render = self.rich_text
