@@ -4,7 +4,7 @@ from drf_yasg import openapi
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from account.models import User
+from config.views import init_user
 from finance.models import Expenses, Category
 from finance.serializer import ExpensesSerializer
 
@@ -12,7 +12,7 @@ from finance.serializer import ExpensesSerializer
 class ExpensesView(APIView):
     @swagger_auto_schema(tags=['Finance'])
     def get(self, request):
-        user = request.user
+        user = init_user(request)
         return Response(ExpensesSerializer(Expenses.objects.filter(user=user), many=True).data, status=200)
 
     @swagger_auto_schema(tags=['Finance'],
@@ -28,7 +28,7 @@ class ExpensesView(APIView):
                          )
     @transaction.atomic
     def post(self, request):
-        user = request.user
+        user = init_user(request)
         data = request.data
         try:
             money = float(data.get("money"))
