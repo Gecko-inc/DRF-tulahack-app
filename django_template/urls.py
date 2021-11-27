@@ -32,6 +32,7 @@ schema_view = get_schema_view(
 api_patterns = [
     path('', include('account.urls')),
     path('', include('finance.urls')),
+    path('', include('step.urls')),
 ]
 
 urlpatterns += i18n_patterns(

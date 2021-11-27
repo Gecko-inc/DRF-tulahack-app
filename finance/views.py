@@ -1,6 +1,7 @@
 from django.db import transaction
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -10,6 +11,8 @@ from finance.serializer import ExpensesSerializer
 
 
 class ExpensesView(APIView):
+    permission_classes = [IsAuthenticated]
+
     @swagger_auto_schema(tags=['Finance'])
     def get(self, request):
         user = init_user(request)
@@ -96,6 +99,8 @@ class ExpensesView(APIView):
 
 
 class CategoryView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         pass
 
