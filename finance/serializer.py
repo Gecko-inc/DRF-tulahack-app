@@ -21,3 +21,14 @@ class CategorySerializer(serializers.ModelSerializer):
             "id",
             "title"
         ]
+
+
+class IncomeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Income
+        fields = [
+            "id",
+            "title",
+            "money",
+            "date"
+        ]
