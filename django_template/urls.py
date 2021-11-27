@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
-from django.contrib.auth import views as auth_views
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
@@ -22,9 +21,9 @@ urlpatterns = [
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Book API",
+        title="TulaHAck API",
         default_version='v1',
-        description="""Simple API for mobile application\nhttps://t.me/nicstim""",
+        description="""API for mobile application""",
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
