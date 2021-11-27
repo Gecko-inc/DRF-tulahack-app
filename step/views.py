@@ -13,7 +13,7 @@ from step.serializer import StepSerializer
 class StepView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(tags=['Finance'])
+    @swagger_auto_schema(tags=['Step'])
     def get(self, request):
         user = init_user(request)
         try:
@@ -23,7 +23,7 @@ class StepView(APIView):
 
         return Response(StepSerializer(step, many=False).data, status=201)
 
-    @swagger_auto_schema(tags=['Finance'],
+    @swagger_auto_schema(tags=['Step'],
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=['count'],
