@@ -125,6 +125,15 @@ class CategoryView(APIView):
         category = Category.objects.create(title=request.data.get("title"), user=user)
         return Response(CategorySerializer(category, many=False).data, status=200)
 
+    @swagger_auto_schema(tags=['Finance'],
+                         request_body=openapi.Schema(
+                             type=openapi.TYPE_OBJECT,
+                             required=['title'],
+                             properties={
+                                 'title': openapi.Schema(type=openapi.TYPE_STRING),
+                             },
+                         ),
+                         )
     def put(self, request):
         data = request.data
         user = init_user(request)
