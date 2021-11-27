@@ -20,6 +20,7 @@ class User(AbstractUser, UserManager):
 
     @property
     def current_exercise(self):
+        """ Получение первого активного упражнения """
         return self.fitness.filter(is_current=True).first()
 
     @current_exercise.setter
@@ -33,7 +34,6 @@ class User(AbstractUser, UserManager):
                 else:
                     setattr(fitness, "is_current", False)
             UserFitness.objects.bulk_update([*user_fitness], ['is_current'])
-            print(1, instance.is_current)
 
     def get_all_exercises(self):
         return self.fitness.all

@@ -1,13 +1,10 @@
-from django.views.generic import TemplateView
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from account.models import User
 from config.views import init_user
-from fitness.models import *
 from fitness.serializers import *
 
 
@@ -156,14 +153,3 @@ class ExerciseView(RetrieveUpdateDestroyAPIView):
             self.model.objects.get(id=request.data.get("id")).delete()
             return Response(status=200)
         return Response({"response": "no data provided"}, status=500)
-
-
-class TestView(TemplateView):
-    template_name = None
-
-    def get(self, request, *args, **kwargs):
-        user = User.objects.get(id=1)
-        print(user.current_exercise)
-        user.current_exercise = UserFitness.objects.get(id=3)
-        print(user.current_exercise)
-        return super().get(request, *args, **kwargs)
