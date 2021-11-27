@@ -35,6 +35,7 @@ api_patterns = [
     path('', include('fitness.urls')),
     path('', include('step.urls')),
     path('', include('todo.urls')),
+    path('', include('covid.urls')),
 ]
 
 urlpatterns += i18n_patterns(

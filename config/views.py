@@ -1,3 +1,4 @@
+import bs4 as bs4
 from rest_framework.authtoken.models import Token
 
 from account.models import User

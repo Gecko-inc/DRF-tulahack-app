@@ -1,3 +1,7 @@
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+
 def parse(url: str):
     import requests
     import re
@@ -19,10 +23,11 @@ def parse(url: str):
                 if len(unformatted_date):
                     date = datetime.strptime(unformatted_date[0], "%d.%m.%Y")
                     if date and date > datetime.now():
-                        return True
-    return False
+                        return "С этим человеком можно здоровататься"
+    return "С этим человеком лучше не общаться"
 
 
-a = "https://www.gosuslugi.ru/covid-cert/verify/9600000013636491?lang=ru&ck=f3843bab3faafdcd68aa186b13557ad2"
-print(parse(a))
-# parse('https://www.gosuslugi.ru/api/covid-cert/v3/cert/check/9600000013636491')
+class CovidView(APIView):
+    def post(self, request, *args, **kwargs):
+        url = request.data.get('url', None)
+        return Response(parse(url), status=200)
