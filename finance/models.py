@@ -21,7 +21,7 @@ class Expenses(models.Model):
                              related_name="user_expenses")
     category = models.ForeignKey(Category, verbose_name=_("Категория"), on_delete=models.CASCADE)
     title = models.CharField(_("Название"), max_length=130)
-    money = models.DecimalField(_("Сумма"), max_digits=12, decimal_places=2)
+    money = models.FloatField(_("Сумма"))
     date = models.DateField(_("Дата"), default=timezone.now)
 
     class Meta:
@@ -35,7 +35,7 @@ class Expenses(models.Model):
 
 class Income(models.Model):
     title = models.CharField(_("Название"), max_length=130)
-    money = models.DecimalField(_("Сумма"), max_digits=12, decimal_places=2)
+    money = models.FloatField(_("Сумма"))
     date = models.DateField(_("Дата"), default=timezone.now)
 
     class Meta:

@@ -5,7 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 class User(AbstractUser, UserManager):
     image = models.ImageField(_("Аватар пользователя"), blank=True, null=True, upload_to="user/image")
-    money_limit = models.DecimalField(_("Денежный лимит"), decimal_places=2, max_digits=12, default=30000.00)
+    balance = models.FloatField(_("Баланс"), default=0.00)
+    money_limit = models.FloatField(_("Денежный лимит"), default=30000.00)
     step_target = models.IntegerField(_("Цель по шагам"), default=10000)
 
     class Meta:
@@ -14,3 +15,8 @@ class User(AbstractUser, UserManager):
 
     def __str__(self):
         return self.username
+
+    def update_balance(self, money: float) -> float:
+        self.balance += money
+        self.save()
+        return self.balance
