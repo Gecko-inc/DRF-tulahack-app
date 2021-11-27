@@ -6,7 +6,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from account.models import User
 from config.views import init_user
 from finance.models import Expenses, Category, Income
 from finance.serializer import ExpensesSerializer, CategorySerializer, IncomeSerializer
