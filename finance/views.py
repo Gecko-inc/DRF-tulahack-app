@@ -93,3 +93,17 @@ class ExpensesView(APIView):
             return Response({
                 "error": "Expenses does not exist"
             }, status=404)
+
+
+class CategoryView(APIView):
+    def get(self, request):
+        pass
+
+    def post(self, request):
+        pass
+
+    def put(self, request):
+        pass
+
+    def delete(self, request):
+        pass
