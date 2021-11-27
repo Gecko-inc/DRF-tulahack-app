@@ -21,7 +21,7 @@ urlpatterns = [
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="TulaHAck API",
+        title="TulaHack API",
         default_version='v1',
         description="""API for mobile application""",
     ),
@@ -32,6 +32,7 @@ schema_view = get_schema_view(
 api_patterns = [
     path('', include('account.urls')),
     path('', include('finance.urls')),
+    path('', include('fitness.urls')),
 ]
 
 urlpatterns += i18n_patterns(

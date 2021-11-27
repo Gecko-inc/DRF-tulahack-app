@@ -8,6 +8,9 @@ class Exercise(models.Model):
     title = models.CharField(_("Название упражнения"), max_length=255, blank=True)
     description = models.TextField(_("Описание упражнения"), blank=True)
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         verbose_name = _("Упражнение")
         verbose_name_plural = _("Упражнения")
@@ -19,7 +22,7 @@ class UserFitness(AbsSort, AbsCreated):
     unit = models.CharField(_("Мера измерения"), max_length=20, default="м")
     exercise = models.ForeignKey("fitness.Exercise", on_delete=models.SET_NULL, null=True, related_name="fitness",
                                  verbose_name=_("Упражнение"))
-    progress = models.PositiveIntegerField(_("Прогресс упражнения"))
+    progress = models.PositiveIntegerField(_("Прогресс упражнения"), null=True, blank=True)
     is_current = models.BooleanField(_("Текущее упражнение"), default=False)
 
     class Meta:
