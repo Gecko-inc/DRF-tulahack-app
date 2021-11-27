@@ -103,9 +103,9 @@ class ExerciseView(RetrieveUpdateDestroyAPIView):
                              type=openapi.TYPE_OBJECT,
                              required=["id"],
                              properties={
-                                 "id": openapi.TYPE_INTEGER,
-                                 "title": openapi.TYPE_STRING,
-                                 "description": openapi.TYPE_STRING,
+                                 "id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                 "title": openapi.Schema(type=openapi.TYPE_STRING),
+                                 "description": openapi.Schema(type=openapi.TYPE_STRING),
                              }
                          ))
     def post(self, request, *args, **kwargs):
@@ -120,9 +120,9 @@ class ExerciseView(RetrieveUpdateDestroyAPIView):
                              type=openapi.TYPE_OBJECT,
                              required=['id'],
                              properties={
-                                 "id": openapi.TYPE_INTEGER,
-                                 "title": openapi.TYPE_STRING,
-                                 "description": openapi.TYPE_STRING,
+                                 "id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                 "title": openapi.Schema(type=openapi.TYPE_STRING),
+                                 "description": openapi.Schema(type=openapi.TYPE_STRING),
                              }
                          ))
     def put(self, request, *args, **kwargs):
@@ -145,9 +145,10 @@ class ExerciseView(RetrieveUpdateDestroyAPIView):
                              type=openapi.TYPE_OBJECT,
                              required=["id"],
                              properties={
-                                 "id": openapi.TYPE_INTEGER,
+                                 "id": openapi.Schema(type=openapi.TYPE_INTEGER),
                              }
-                         ))
+                         )
+                         )
     def delete(self, request, *args, **kwargs):
         if request.data:
             self.model.objects.get(id=request.data.get("id")).delete()
