@@ -1,3 +1,5 @@
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -28,6 +30,14 @@ def parse(url: str):
 
 
 class CovidView(APIView):
+    @swagger_auto_schema(tags=["Covid"],
+                         request_body=openapi.Schema(
+                             type=openapi.TYPE_OBJECT,
+                             required=["url"],
+                             properties={
+                                 "url": openapi.Schema(type=openapi.TYPE_STRING)
+                             }
+                         ))
     def post(self, request, *args, **kwargs):
         url = request.data.get('url', None)
         return Response(parse(url), status=200)
