@@ -10,14 +10,14 @@ from django.conf.urls.i18n import i18n_patterns
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-
-import sync.views
 from .settings import DEBUG
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('i18n/', include('django.conf.urls.i18n')),
-    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('api-auth/', include('rest_framework.urls')),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
+    path('auth/', include('djoser.urls.jwt')),
 ]
 
 schema_view = get_schema_view(
@@ -31,7 +31,6 @@ schema_view = get_schema_view(
 )
 
 api_patterns = [
-    path('', include('section.urls')),
     path('', include('account.urls')),
 ]
 
