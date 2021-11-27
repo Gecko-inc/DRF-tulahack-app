@@ -6,13 +6,14 @@ from rest_framework.views import APIView
 
 from account.models import User
 from finance.models import Expenses, Category
+from finance.serializer import ExpensesSerializer
 
 
 class ExpensesView(APIView):
     @swagger_auto_schema(tags=['Finance'])
     def get(self, request):
         user = request.user
-        return Response(status=200)
+        return Response(ExpensesSerializer(Expenses.objects.filter(user=user), many=True).data, status=200)
 
     @swagger_auto_schema(tags=['Finance'],
                          request_body=openapi.Schema(
@@ -29,7 +30,6 @@ class ExpensesView(APIView):
     def post(self, request):
         sid = transaction.savepoint()
         user = request.user
-        # user = User.objects.first()
         data = request.data
         try:
             money = float(data.get("money"))

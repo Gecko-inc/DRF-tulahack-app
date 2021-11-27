@@ -32,6 +32,10 @@ class Expenses(models.Model):
     def __str__(self):
         return f"{self.title}| {self.money} RUB"
 
+    @property
+    def category_name(self) -> str:
+        return self.category.title
+
 
 class Income(models.Model):
     title = models.CharField(_("Название"), max_length=130)
