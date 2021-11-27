@@ -101,7 +101,6 @@ class ExerciseView(RetrieveUpdateDestroyAPIView):
     @swagger_auto_schema(tags=['Exercise'],
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
-                             required=["id"],
                              properties={
                                  "id": openapi.Schema(type=openapi.TYPE_INTEGER),
                                  "title": openapi.Schema(type=openapi.TYPE_STRING),
@@ -147,8 +146,7 @@ class ExerciseView(RetrieveUpdateDestroyAPIView):
                              properties={
                                  "id": openapi.Schema(type=openapi.TYPE_INTEGER),
                              }
-                         )
-                         )
+                         ))
     def delete(self, request, *args, **kwargs):
         if request.data:
             self.model.objects.get(id=request.data.get("id")).delete()
