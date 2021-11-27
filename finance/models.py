@@ -4,9 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Category(models.Model):
-    SVG_CHOICES = {
-        ""
-    }
     title = models.CharField(_("Название"), max_length=130)
     user = models.ForeignKey("account.User", verbose_name=_("Пользователь"), blank=True, null=True,
                              on_delete=models.SET_NULL, related_name="user_category")

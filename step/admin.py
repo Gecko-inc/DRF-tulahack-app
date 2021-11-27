@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from step.models import Step
+
+
+@admin.register(Step)
+class StepAdmin(admin.ModelAdmin):
+    list_display = ("id", "user", "count")
