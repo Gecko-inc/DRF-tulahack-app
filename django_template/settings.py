@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'config',
     'account',
     'finance',
+    'fitness',
     'ckeditor',
     'ckeditor_uploader',
     'django_filters',
