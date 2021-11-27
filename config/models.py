@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -27,6 +28,13 @@ class Config(models.Model):
 
 class AbsSort(models.Model):
     sort = models.IntegerField(_("Сортировка"), default=0)
+
+    class Meta:
+        abstract = True
+
+
+class AbsCreated(models.Model):
+    created = models.DateTimeField(_("Дата создания"), default=timezone.now)
 
     class Meta:
         abstract = True

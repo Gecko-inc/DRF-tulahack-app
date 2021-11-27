@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from config.models import AbsSort
+from config.models import AbsSort, AbsCreated
 
 
 class Exercise(models.Model):
@@ -13,15 +13,15 @@ class Exercise(models.Model):
         verbose_name_plural = _("Упражнения")
 
 
-class UserFitness(AbsSort):
+class UserFitness(AbsSort, AbsCreated):
     user = models.ForeignKey("account.User", on_delete=models.CASCADE, related_name="fitness",
                              verbose_name=_("Пользователь"))
     unit = models.CharField(_("Мера измерения"), max_length=20, default="м")
-    exercise = models.ForeignKey("fitness.Exercise", on_delete=models.SET_NULL, related_name="fitness",
+    exercise = models.ForeignKey("fitness.Exercise", on_delete=models.SET_NULL, null=True, related_name="fitness",
                                  verbose_name=_("Упражнение"))
     progress = models.PositiveIntegerField(_("Прогресс упражнения"))
     is_current = models.BooleanField(_("Текущее упражнение"), default=False)
 
     class Meta:
         verbose_name = _("Фитнес-трекер пользователя")
-        verbose_name_ = _("Фитнес-трекер пользователей")
+        verbose_name_plural = _("Фитнес-трекер пользователей")
