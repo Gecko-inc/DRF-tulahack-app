@@ -14,3 +14,7 @@ class Step(models.Model):
 
     def __str__(self):
         return f"{self.id}| {self.user}: {self.count}"
+
+    @property
+    def status(self):
+        return "Вы достигли цели!" if self.count >= self.user.step_target else "Пора прогуляться."

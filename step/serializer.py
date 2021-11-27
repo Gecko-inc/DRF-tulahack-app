@@ -6,5 +6,6 @@ class StepSerializer(serializers.ModelSerializer):
     class Meta:
         model = Step
         fields = [
-            "count"
+            "count",
+            "status",
         ]
