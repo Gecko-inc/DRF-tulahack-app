@@ -34,7 +34,7 @@ class AbsSort(models.Model):
 
 
 class AbsCreated(models.Model):
-    created = models.DateTimeField(_("Дата создания"), auto_now=timezone.now)
+    created = models.DateTimeField(_("Дата создания"), default=timezone.now)
 
     class Meta:
         abstract = True

@@ -34,6 +34,7 @@ api_patterns = [
     path('', include('finance.urls')),
     path('', include('fitness.urls')),
     path('', include('step.urls')),
+    path('', include('todo.urls')),
 ]
 
 urlpatterns += i18n_patterns(

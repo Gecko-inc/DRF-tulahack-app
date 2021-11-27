@@ -1,3 +1,15 @@
 from django.db import models
 
-# Create your models here.
+from config.models import AbsCreated
+from django.utils.translation import gettext_lazy as _
+
+
+class Todo(AbsCreated):
+    title = models.CharField(_("Наименование задания"), max_length=255, blank=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = _("TODO-лист")
+        verbose_name_plural = _("TODO-листы")
