@@ -1,43 +1,20 @@
-from django.db import models
-from django.utils.translation import gettext_lazy as _
+from rest_framework.authtoken.models import Token
 
+from account.models import User
 from .models import Config
-import hashlib
-import time
-import random
-import pyqiwi
 
 
-def get_qiwi_url(user_token: str) -> str:
+def init_user(request):
     """
-      Generate url for pay
+        Получение пользователя по токену
     """
+    user_id = Token.objects.get(key=request.headers.get("Authorization").replace("Token ", "")).user_id
     try:
-        phone = Config.objects.get(key="qiwi_phone").value
-        price = float(Config.objects.get(key="subscribe_price").value)
-        url = pyqiwi.generate_form_link("99", phone, price, comment=user_token)
-
-        return url + f"&comment={user_token}"
-    except Config.DoesNotExist:
-        return "config empty"
-
-
-def check_qiwi_pay(user_token: str) -> bool:
-    """
-      Payment verification
-    """
-    try:
-        token = Config.objects.get(key="qiwi_token").value
-        phone = Config.objects.get(key="qiwi_phone").value
-        price = float(Config.objects.get(key="subscribe_price").value)
-        qiwi = pyqiwi.Wallet(token, number=phone, contract_info=True, auth_info=True, user_info=True)
-        for item in qiwi.history().get('transactions'):
-            if item.comment == user_token and item.sum.amount >= price:
-                return True
-    except Config.DoesNotExist:
-        return False
-
-    return False
+        user = User.objects.get(id=user_id)
+        user.set_rang()
+        return user
+    except User.DoesNotExist:
+        return None
 
 
 def get_upload_to(instance, filename) -> str:
@@ -58,12 +35,3 @@ def common_context() -> dict:
     context = dict()
     context['cfg'] = Config.get_cfg()
     return context
-
-
-def generate_token(unique_arg: str = "arg") -> str:
-    """
-      Generate unique token
-    """
-    return hashlib.md5(
-        f'{unique_arg}{random.randint(0, 999)}{time.time()}{random.randint(1000, 9999)}'.encode('utf-8')
-    ).hexdigest()[:121]
