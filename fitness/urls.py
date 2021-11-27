@@ -4,5 +4,7 @@ from .views import *
 app_name = "fitness"
 
 urlpatterns = [
-    path('user-exercises/', GetUserFitness.as_view(), name="user-exercises"),
+    path('user-exercises/', UserFitnessView.as_view(), name="user-exercises"),
+    path('exercises/', ExerciseView.as_view(), name="exercises"),
+    path('test/', TestView.as_view())
 ]

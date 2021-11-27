@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from fitness.models import UserFitness
+
 
 class User(AbstractUser, UserManager):
     image = models.ImageField(_("Аватар пользователя"), blank=True, null=True, upload_to="user/image")
@@ -20,7 +22,20 @@ class User(AbstractUser, UserManager):
     def current_exercise(self):
         return self.fitness.filter(is_current=True).first()
 
-    def get_exercise_all(self):
+    @current_exercise.setter
+    def current_exercise(self, instance: UserFitness):
+        """ Обновление активного упражнения """
+        if isinstance(instance, UserFitness):
+            user_fitness = self.fitness.all()
+            for fitness in user_fitness:
+                if fitness.id == instance.id:
+                    setattr(fitness, "is_current", True)
+                else:
+                    setattr(fitness, "is_current", False)
+            UserFitness.objects.bulk_update([*user_fitness], ['is_current'])
+            print(1, instance.is_current)
+
+    def get_all_exercises(self):
         return self.fitness.all
 
     def update_balance(self, money: float) -> float:
