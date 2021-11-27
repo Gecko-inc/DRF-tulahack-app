@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'config',
     'account',
+    'finance',
     'ckeditor',
     'ckeditor_uploader',
     'django_filters',
