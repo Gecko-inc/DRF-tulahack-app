@@ -16,6 +16,13 @@ class User(AbstractUser, UserManager):
     def __str__(self):
         return self.username
 
+    @property
+    def current_exercise(self):
+        return self.fitness.filter(is_current=True).first()
+
+    def get_exercise_all(self):
+        return self.fitness.all
+
     def update_balance(self, money: float) -> float:
         self.balance += money
         self.save()

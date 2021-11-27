@@ -1,3 +1,6 @@
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
 from .models import Config
 import hashlib
 import time
@@ -62,5 +65,5 @@ def generate_token(unique_arg: str = "arg") -> str:
       Generate unique token
     """
     return hashlib.md5(
-            f'{unique_arg}{random.randint(0, 999)}{time.time()}{random.randint(1000, 9999)}'.encode('utf-8')
+        f'{unique_arg}{random.randint(0, 999)}{time.time()}{random.randint(1000, 9999)}'.encode('utf-8')
     ).hexdigest()[:121]

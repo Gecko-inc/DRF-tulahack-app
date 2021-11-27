@@ -23,3 +23,10 @@ class Config(models.Model):
         context = dict((cfg.key, cfg.value) for cfg in cls.objects.all())
 
         return context
+
+
+class AbsSort(models.Model):
+    sort = models.IntegerField(_("Сортировка"), default=0)
+
+    class Meta:
+        abstract = True
