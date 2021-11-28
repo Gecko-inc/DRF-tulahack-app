@@ -20,10 +20,13 @@ class User(AbstractUser, UserManager):
     def __str__(self):
         return self.username
 
-    def get_last_month_expenses(self, month: int):
+    def get_last_month_expenses(self, month: int = int(datetime.datetime.now().month)):
         return dict(self.user_expenses.filter(date__month=month).aggregate(total=models.Sum('money')))
 
-    def get_last_month_steps(self, month: int):
+    def get_last_month_income(self, month: int = int(datetime.datetime.now().month)):
+        return dict(self.user_income.filter(date__month=month).aggregate(total=models.Sum('money')))
+
+    def get_last_month_steps(self, month: int = int(datetime.datetime.now().month)):
         return dict(self.step.filter(date__month=month).aggregate(total=models.Sum('count')))
 
     @property

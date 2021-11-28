@@ -40,6 +40,8 @@ class Expenses(models.Model):
 
 class Income(models.Model):
     title = models.CharField(_("Название"), max_length=130)
+    user = models.ForeignKey("account.User", verbose_name="Пользователь", on_delete=models.CASCADE, null=True,
+                             related_name="user_income")
     money = models.FloatField(_("Сумма"))
     date = models.DateField(_("Дата"), default=timezone.now)
 

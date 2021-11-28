@@ -1,22 +1,20 @@
 from rest_framework import serializers
 
-# from account.models import MobileUser, Bookmark
+from account.models import User
 
 
-# class BookmarkSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Bookmark
-#         fields = [
-#             'id',
-#             'info',
-#         ]
-#
-#
-# class MobileUserSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = MobileUser
-#         fields = [
-#             "token",
-#             "is_premium",
-#         ]
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'username',
+            'image',
+            'balance',
+            'money_limit',
+            'step_target',
+            'get_last_month_expenses',
+            'get_last_month_income',
+            'get_last_month_steps',
+            'current_exercise',
+        ]
