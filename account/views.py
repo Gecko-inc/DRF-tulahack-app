@@ -1,5 +1,4 @@
 from datetime import datetime
-# TODO: зща микро настроить попытюсь
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
