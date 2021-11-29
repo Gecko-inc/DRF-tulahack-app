@@ -19,16 +19,6 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
 ]
 
-schema_view = get_schema_view(
-    openapi.Info(
-        title="TulaHack API",
-        default_version='v1',
-        description="""API for mobile application""",
-    ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-)
-
 api_patterns = [
     path('', include('account.urls')),
     path('', include('finance.urls')),
@@ -38,6 +28,23 @@ api_patterns = [
     path('', include('covid.urls')),
 ]
 
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Personal Assistant API",
+        default_version='v1',
+        description='''
+        API for mobile application "Personal Assistant"
+        Telegram chat: <a href="https://t.me/tabulaweb_assistent" target="_blank">link</a>
+        ''',
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+    patterns=[
+        path('api/', include((api_patterns, 'API'), namespace='api')),
+        path('auth/', include('djoser.urls.authtoken')),
+              ],
+)
+
 urlpatterns += i18n_patterns(
 
     path('api/', include((api_patterns, 'API'), namespace='api')),
@@ -46,7 +53,7 @@ urlpatterns += i18n_patterns(
 )
 
 urlpatterns += [
-        path('api/', RedirectView.as_view(url='/swagger/', permanent=True)),
+        path('api/', RedirectView.as_view(url='/docs/', permanent=True)),
         path('', RedirectView.as_view(url='/docs/', permanent=True)),
         path('ckeditor/', include('ckeditor_uploader.urls')),
         path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
