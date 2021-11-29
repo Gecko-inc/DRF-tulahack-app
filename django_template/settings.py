@@ -13,17 +13,9 @@ except IOError:
     config = {
         'secret_key': 'simple_key',
         'db_type': 'sqlite3',
-        'parser_api': 'none'
     }
 
-try:
-    with open(os.path.join(BASE_DIR, 'local', 'auth.json')) as handle:
-        auth_config = json.load(handle)
-except IOError:
-    auth_config = {}
-
 SECRET_KEY = str(config['secret_key'])
-PARSER_API = config['parser_api']
 
 # При False необходимо настроить nginx
 DEBUG = True
@@ -89,12 +81,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'django_template.wsgi.application'
 
 # Настройки базы данных
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if config.get("db_type") == "psql":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': config.get("database", ""),
+            'USER': config.get("user", ""),
+            'PASSWORD': config.get("password", ""),
+            'HOST': config.get("host", ""),
+            'PORT': config.get("port", ""),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Настройки авторизации
 
@@ -163,6 +167,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
+
 # Swagger
 
 SWAGGER_SETTINGS = {
