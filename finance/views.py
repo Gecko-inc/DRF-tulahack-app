@@ -45,7 +45,7 @@ class ExpensesView(APIView):
             return Response({"error": "Category does not exist"}, status=404)
 
         sid = transaction.savepoint()
-        Expenses.objects.create(
+        expenses = Expenses.objects.create(
             user=user,
             category_id=category.id,
             title=data.get("title"),
@@ -54,7 +54,7 @@ class ExpensesView(APIView):
         if user.update_balance(money * -1) < 0:
             transaction.savepoint_rollback(sid)
             return Response({"error": "the balance cannot be negative"}, status=400)
-        return Response(status=201)
+        return Response(ExpensesSerializer(expenses).data, status=201)
 
     @swagger_auto_schema(tags=['Finance'],
                          request_body=openapi.Schema(

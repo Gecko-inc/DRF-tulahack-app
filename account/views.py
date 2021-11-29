@@ -22,7 +22,7 @@ class GetUserMonthExpenses(APIView):
 
 
 class GetUserMonthSteps(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(tags=["Custom-User"], operation_description="Token required")
     def get(self, request, *args, **kwargs):
@@ -33,7 +33,7 @@ class GetUserMonthSteps(APIView):
 class UserView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(tags=['Custom-User'])
+    @swagger_auto_schema(tags=['Custom-User'], operation_description="Token required")
     def get(self, request):
         user = init_user(request)
         return Response(UserSerializer(user, many=False).data, status=201)

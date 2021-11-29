@@ -23,7 +23,7 @@ class Expenses(models.Model):
     category = models.ForeignKey(Category, verbose_name=_("Категория"), on_delete=models.CASCADE)
     title = models.CharField(_("Название"), max_length=130)
     money = models.FloatField(_("Сумма"))
-    date = models.DateField(_("Дата"), default=timezone.now)
+    date = models.DateField(_("Дата"), default=timezone.now().date())
 
     class Meta:
         verbose_name = _("Расход")
@@ -43,7 +43,7 @@ class Income(models.Model):
     user = models.ForeignKey("account.User", verbose_name="Пользователь", on_delete=models.CASCADE, null=True,
                              related_name="user_income")
     money = models.FloatField(_("Сумма"))
-    date = models.DateField(_("Дата"), default=timezone.now)
+    date = models.DateField(_("Дата"), default=timezone.now().date())
 
     class Meta:
         verbose_name = _("Доход")
