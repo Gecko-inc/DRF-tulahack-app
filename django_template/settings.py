@@ -167,12 +167,12 @@ AUTHENTICATION_BACKENDS = (
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
-        # 'X-Access-Token': {
-        #     'type': 'apiKey',
-        #     'in': 'header',
-        #     'name': 'X-Access-Token',
-        #     'description': "TLC2B6COXFXWLSDK"
-        # },
+        'Authorization': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization',
+            'description': "Token $YorToken"
+        },
         'basic': {
             'type': 'basic'
         }
