@@ -25,12 +25,13 @@ def parse(url: str):
                 if len(unformatted_date):
                     date = datetime.strptime(unformatted_date[0], "%d.%m.%Y")
                     if date and date > datetime.now():
-                        return "С этим человеком можно здоровататься"
+                        return "С этим человеком можно здороваться"
     return "С этим человеком лучше не общаться"
 
 
 class CovidView(APIView):
     @swagger_auto_schema(tags=["Covid"],
+                         operation_description="Получение информации о ковидной прививке человека",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=["url"],

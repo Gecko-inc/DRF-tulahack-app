@@ -14,12 +14,13 @@ from finance.serializer import ExpensesSerializer, CategorySerializer, IncomeSer
 class ExpensesView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(tags=['Finance'])
+    @swagger_auto_schema(tags=['Finance'], operation_description="Получение расходов пользователя")
     def get(self, request):
         user = init_user(request)
         return Response(ExpensesSerializer(Expenses.objects.filter(user=user), many=True).data, status=200)
 
     @swagger_auto_schema(tags=['Finance'],
+                         operation_description="Создание расходов пользователя",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=['category_id', "money", 'title'],
@@ -57,6 +58,7 @@ class ExpensesView(APIView):
         return Response(ExpensesSerializer(expenses).data, status=201)
 
     @swagger_auto_schema(tags=['Finance'],
+                         operation_description="Удаление расхода пользователя",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=['expense_id'],
@@ -74,6 +76,7 @@ class ExpensesView(APIView):
         return Response(status=201)
 
     @swagger_auto_schema(tags=['Finance'],
+                         operation_description="Обновление расходов пользователя",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=['id'],
@@ -93,6 +96,7 @@ class ExpensesView(APIView):
         try:
             expenses = Expenses.objects.get(id=data.get("id"), user=user)
             expenses.title = data.get("title", expenses.title)
+            # TODO АШИПКА АЛЯРМ
             if data.get("money"):
                 user.update_balance(expenses.money)
             expenses.money = data.get("money", expenses.money)
@@ -116,13 +120,15 @@ class ExpensesView(APIView):
 class CategoryView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(tags=['Finance'])
+    @swagger_auto_schema(tags=['Finance'],
+                         operation_description="Получение всех пользовательских и остальных категорий")
     def get(self, request):
         user = init_user(request)
         return Response(CategorySerializer(Category.objects.filter(Q(user=None) | Q(user=user)),
                                            many=True).data)
 
     @swagger_auto_schema(tags=['Finance'],
+                         operation_description="Создание пользовательской категории",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=['title'],
@@ -171,6 +177,7 @@ class CategoryView(APIView):
         return Response(CategorySerializer(category, many=False).data, status=200)
 
     @swagger_auto_schema(tags=['Finance'],
+                         operation_description="Обновление категории пользователя",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=['id'],
@@ -194,6 +201,7 @@ class CategoryView(APIView):
             }, status=404)
 
     @swagger_auto_schema(tags=['Finance'],
+                         operation_description="Удаление пользовательской категории",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=['category_id'],
@@ -206,20 +214,21 @@ class CategoryView(APIView):
         user = init_user(request)
         try:
             Expenses.objects.get(id=request.data.get("category_id"), user=user).delete()
-        except Expenses.DoesNotExist:
-            pass
+        except Expenses.DoesNotExist as e:
+            print(e)
         return Response(status=201)
 
 
 class IncomeView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(tags=['Finance'])
+    @swagger_auto_schema(tags=['Finance'], operation_description="Получение всех доходов пользователя")
     def get(self, request):
         user = init_user(request)
         return Response(IncomeSerializer(Income.objects.filter(user=user), many=True).data, status=201)
 
     @swagger_auto_schema(tags=['Finance'],
+                         operation_description="Создание доходов пользователя",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=['title', 'money'],
@@ -245,6 +254,7 @@ class IncomeView(APIView):
         return Response(IncomeSerializer(income, many=False).data, status=201)
 
     @swagger_auto_schema(tags=['Finance'],
+                         operation_description="Обновление доходов + обновления баланса пользователя",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=['id'],
@@ -283,6 +293,7 @@ class IncomeView(APIView):
             }, status=404)
 
     @swagger_auto_schema(tags=['Finance'],
+                         operation_description="Удаление доходов пользователя",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=['income_id'],

@@ -2,6 +2,7 @@ from datetime import datetime
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -38,6 +39,7 @@ class UserView(APIView):
         return Response(UserSerializer(user, many=False).data, status=201)
 
     @swagger_auto_schema(tags=['Custom-User'],
+                         operation_description="Обновление лимита средств, цель шагов, изображения пользователя\nToken required",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              required=['id'],
@@ -61,9 +63,11 @@ class UserView(APIView):
         user.step_target = data.get("step_target", user.step_target)
         if data.get("image"):
             # TODO: check it!
+            # Hello Backend Developer who did this
+            # I have several questions. Why blyat do you leave except: pass in your code
             try:
                 user.image = data.get("image")
-            except:
-                pass
+            except (ValueError, ValidationError, Exception) as e:
+                print(e)
         user.save()
         return Response(UserSerializer(user, many=False).data, status=201)
