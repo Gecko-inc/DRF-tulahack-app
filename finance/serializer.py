@@ -8,7 +8,7 @@ class ExpensesSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             'title',
-            'category_name',
+            'category',
             'money',
             'date'
         ]

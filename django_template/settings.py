@@ -15,6 +15,12 @@ except IOError:
         'db_type': 'sqlite3',
     }
 
+try:
+    with open(os.path.join(BASE_DIR, 'mcc_codes.json')) as handle:
+        MCC_CODES = json.load(handle)
+except IOError:
+    MCC_CODES = dict()
+
 SECRET_KEY = str(config['secret_key'])
 
 # При False необходимо настроить nginx

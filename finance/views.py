@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from config.views import init_user
+from config.views import init_user, scan_qr_code
 from finance.models import Expenses, Category, Income
 from finance.serializer import ExpensesSerializer, CategorySerializer, IncomeSerializer
 
@@ -22,10 +22,8 @@ class ExpensesView(APIView):
     @swagger_auto_schema(tags=['Finance'],
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
-                             required=['category_id', "money", 'title'],
+                             required=["money"],
                              properties={
-                                 'title': openapi.Schema(type=openapi.TYPE_STRING),
-                                 'category_id': openapi.Schema(type=openapi.TYPE_INTEGER),
                                  'money': openapi.Schema(type=openapi.TYPE_STRING),
                              },
                          ),
@@ -34,24 +32,9 @@ class ExpensesView(APIView):
     def post(self, request):
         user = init_user(request)
         data = request.data
-        try:
-            money = float(data.get("money"))
-        except (ValueError, TypeError):
-            return Response({"error": "Invalid data"}, status=400)
-
-        try:
-            category = Category.objects.get(id=data.get("category_id"))
-        except Category.DoesNotExist:
-            return Response({"error": "Category does not exist"}, status=404)
-
         sid = transaction.savepoint()
-        expenses = Expenses.objects.create(
-            user=user,
-            category_id=category.id,
-            title=data.get("title"),
-            money=money
-        )
-        if user.update_balance(money * -1) < 0:
+        expenses = scan_qr_code(data.get("money"), user)
+        if user.update_balance(expenses.money * -1) < 0:
             transaction.savepoint_rollback(sid)
             return Response({"error": "the balance cannot be negative"}, status=400)
         return Response(ExpensesSerializer(expenses).data, status=201)
@@ -72,45 +55,6 @@ class ExpensesView(APIView):
         except Expenses.DoesNotExist:
             pass
         return Response(status=201)
-
-    @swagger_auto_schema(tags=['Finance'],
-                         request_body=openapi.Schema(
-                             type=openapi.TYPE_OBJECT,
-                             required=['id'],
-                             properties={
-                                 'id': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                 'title': openapi.Schema(type=openapi.TYPE_STRING),
-                                 'category_id': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                 'money': openapi.Schema(type=openapi.TYPE_STRING),
-                             },
-                         ),
-                         )
-    @transaction.atomic
-    def put(self, request):
-        data = request.data
-        user = init_user(request)
-        sid = transaction.savepoint()
-        try:
-            expenses = Expenses.objects.get(id=data.get("id"), user=user)
-            expenses.title = data.get("title", expenses.title)
-            if data.get("money"):
-                user.update_balance(expenses.money)
-            expenses.money = data.get("money", expenses.money)
-            expenses.category_id = data.get("category_id", expenses.category_id)
-            expenses.save()
-            try:
-                money = float(data.get("money"))
-            except (ValueError, TypeError):
-                return Response({"error": "Invalid data"}, status=400)
-
-            if user.update_balance(money * -1) < 0:
-                transaction.savepoint_rollback(sid)
-                return Response({"error": "the balance cannot be negative"}, status=400)
-            return Response(ExpensesSerializer(expenses, many=False).data, status=200)
-        except Expenses.DoesNotExist:
-            return Response({
-                "error": "Expenses does not exist"
-            }, status=404)
 
 
 class CategoryView(APIView):
