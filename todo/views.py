@@ -1,6 +1,7 @@
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from config.views import init_user
@@ -11,6 +12,7 @@ class TodoView(RetrieveUpdateDestroyAPIView):
     model = Todo
     queryset = Todo.objects.all()
     serializer_class = TodoSerializer
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(tags=["Todo"])
     def get(self, request, *args, **kwargs):
