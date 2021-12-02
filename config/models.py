@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from django_template import settings
+
 
 class Config(models.Model):
     title = models.CharField(_("Наименование"), max_length=130)
@@ -35,6 +37,13 @@ class AbsSort(models.Model):
 
 class AbsCreated(models.Model):
     created = models.DateTimeField(_("Дата создания"), default=timezone.now)
+
+    class Meta:
+        abstract = True
+
+
+class AbsAccount(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_("Пользователь"))
 
     class Meta:
         abstract = True

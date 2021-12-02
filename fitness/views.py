@@ -16,8 +16,9 @@ class UserFitnessView(RetrieveUpdateDestroyAPIView):
 
     @swagger_auto_schema(tags=["UserFitness"])
     def get(self, request, *args, **kwargs):
-        if request.data:
-            user_fitness = self.queryset.filter(user_id=init_user(request))
+        user = init_user(request)
+        if user:
+            user_fitness = self.queryset.filter(user=user)
             serializer = self.serializer_class(user_fitness, many=True)
             return Response(serializer.data, status=200)
         return Response({"response": "no data provided"}, status=500)

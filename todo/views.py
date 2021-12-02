@@ -3,6 +3,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 
+from config.views import init_user
 from todo.serializer import *
 
 
@@ -13,8 +14,9 @@ class TodoView(RetrieveUpdateDestroyAPIView):
 
     @swagger_auto_schema(tags=["Todo"])
     def get(self, request, *args, **kwargs):
-        if request.data:
-            serializer = self.serializer_class(self.model.objects.all(), many=True)
+        user = init_user(request)
+        if user:
+            serializer = self.serializer_class(self.model.objects.filter(user=user), many=True)
             return Response(serializer.data, status=200)
         return Response(status=500)
 

@@ -1,10 +1,10 @@
 from django.db import models
 
-from config.models import AbsCreated
+from config.models import AbsCreated, AbsAccount
 from django.utils.translation import gettext_lazy as _
 
 
-class Todo(AbsCreated):
+class Todo(AbsAccount, AbsCreated):
     title = models.CharField(_("Наименование задания"), max_length=255, blank=True)
 
     def __str__(self):
