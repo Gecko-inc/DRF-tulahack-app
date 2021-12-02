@@ -20,7 +20,7 @@ class Category(models.Model):
 class Expenses(models.Model):
     user = models.ForeignKey("account.User", verbose_name=_("Пользователь"), on_delete=models.CASCADE,
                              related_name="user_expenses")
-    category = models.ForeignKey(Category, verbose_name=_("Категория"), on_delete=models.CASCADE)
+    category = models.CharField(_("Категория"), default="Оплата товаров и услуг", max_length=210)
     title = models.CharField(_("Название"), max_length=130)
     money = models.FloatField(_("Сумма"))
     date = models.DateField(_("Дата"), default=timezone.now().date())
@@ -32,10 +32,6 @@ class Expenses(models.Model):
 
     def __str__(self):
         return f"{self.title}| {self.money} RUB"
-
-    @property
-    def category_name(self) -> str:
-        return self.category.title
 
 
 class Income(models.Model):
