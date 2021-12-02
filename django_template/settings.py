@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'step',
     'todo',
     "covid",
+    "wallet",
     'ckeditor',
     'ckeditor_uploader',
     'django_filters',
