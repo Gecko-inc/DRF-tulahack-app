@@ -32,8 +32,12 @@ def gen_address(index: int) -> list:
 
 def send_btc(user: User, amount: float, address: str):
     # TODO: разобраться с fee
-    fee = 5
-    my_key = PrivateKey(wif=user.wif)
-    tx_hash = my_key.create_transaction([(address, float, 'btc')], fee=fee, absolute_fee=True)
-    url = 'https://blockchain.info/pushtx'
-    requests.post(url, data={'tx': tx_hash})
+    try:
+        fee = 5
+        key = PrivateKey(wif=user.wif)
+        tx_hash = key.create_transaction([(address, amount, 'btc')], fee=fee, absolute_fee=True)
+        url = 'https://blockchain.info/pushtx'
+        requests.post(url, data={'tx': tx_hash})
+        return "success"
+    except Exception as e:
+        return str(e)

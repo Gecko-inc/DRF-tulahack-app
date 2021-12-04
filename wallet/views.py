@@ -3,7 +3,7 @@ import os
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from config.views import init_user
-from .core import gen_address, create_qr
+from .core import gen_address, create_qr, send_btc
 from .models import Wallet
 from django.core.files import File
 from drf_yasg.utils import swagger_auto_schema
@@ -60,6 +60,21 @@ class WalletView(APIView):
 
 
 class TransactionView(APIView):
-    # TODO: POST запрос на создание транзакции
+    # TODO: POST запрос натянуть swagger
     # TODO: GET запрос на просмотр статуса транзакции
-    ...
+    def post(self, request):
+        user = init_user(request)
+        data = request.data
+        try:
+            amount = float(data.get("amount"))
+        except (ValueError, TypeError):
+            return Response({"error": "Invalid data"}, status=400)
+        result = send_btc(user, amount, data.get("address"))
+        if result == 'success':
+            return Response({
+                "message": result
+            }, status=201)
+
+        return Response({
+            "error": result
+        }, status=400)
