@@ -2,6 +2,8 @@ from django.db import models
 import requests
 from bit import PrivateKey
 
+from config.views import get_upload_to
+
 
 class Wallet(models.Model):
     user = models.ForeignKey("account.User", related_name="wallet", on_delete=models.CASCADE,
@@ -9,6 +11,7 @@ class Wallet(models.Model):
     label = models.CharField("Название", max_length=130)
     address = models.CharField("Адрес", max_length=210)
     wif = models.CharField("WIF", max_length=210)
+    qr_code = models.ImageField("QR", upload_to=get_upload_to)
 
     class Meta:
         verbose_name = "Кошелек"

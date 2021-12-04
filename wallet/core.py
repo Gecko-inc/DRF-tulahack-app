@@ -1,8 +1,16 @@
 from bipwallet.utils import HDPrivateKey, HDKey, Wallet
 import requests
 from bit import PrivateKey
-
+from django.conf import settings
 from account.models import User
+import qrcode
+
+
+def create_qr(address: str):
+    filename = f"btc{address}.png"
+    img = qrcode.make(address)
+    img.save(filename)
+    return filename
 
 
 def gen_address(index: int) -> list:
@@ -10,7 +18,7 @@ def gen_address(index: int) -> list:
       Генерация BTC кошелька
     """
     # TODO: настроить получение фразы из JSON файла
-    seed = 'just text'
+    seed = settings.BTC_SEED
     master_key = HDPrivateKey.master_key_from_mnemonic(seed)
     root_keys = HDKey.from_path(master_key, "m/44'/0'/0'/0")[-1].public_key.to_b58check()
     xpublic_key = str(root_keys)

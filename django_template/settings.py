@@ -12,10 +12,13 @@ try:
 except IOError:
     config = {
         'secret_key': 'simple_key',
+        'seed': 'simple text',
         'db_type': 'sqlite3',
     }
 
 SECRET_KEY = str(config['secret_key'])
+
+BTC_SEED = str(config['seed'])
 
 # При False необходимо настроить nginx
 DEBUG = True
