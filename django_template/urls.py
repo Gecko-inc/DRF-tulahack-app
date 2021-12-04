@@ -26,6 +26,7 @@ api_patterns = [
     path('', include('step.urls')),
     path('', include('todo.urls')),
     path('', include('covid.urls')),
+    path('', include('wallet.urls')),
 ]
 
 schema_view = get_schema_view(

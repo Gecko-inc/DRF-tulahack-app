@@ -3,6 +3,7 @@
 ```
 {
     "secret_key": "123",
+    "seed": "simple text",
     "db_type": "sqlite3 or psql",
     "database": "db_name",
     "user": "db_user",

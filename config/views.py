@@ -1,7 +1,8 @@
-import bs4 as bs4
 from rest_framework.authtoken.models import Token
 
 from account.models import User
+from django.conf import settings
+from finance.models import Expenses
 from .models import Config
 
 

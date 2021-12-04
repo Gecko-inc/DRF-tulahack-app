@@ -23,10 +23,8 @@ class ExpensesView(APIView):
                          operation_description="Создание расходов пользователя",
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
-                             required=['category_id', "money", 'title'],
+                             required=["money"],
                              properties={
-                                 'title': openapi.Schema(type=openapi.TYPE_STRING),
-                                 'category_id': openapi.Schema(type=openapi.TYPE_INTEGER),
                                  'money': openapi.Schema(type=openapi.TYPE_STRING),
                              },
                          ),
@@ -52,7 +50,7 @@ class ExpensesView(APIView):
             title=data.get("title"),
             money=money
         )
-        if user.update_balance(money * -1) < 0:
+        if user.update_balance(expenses.money * -1) < 0:
             transaction.savepoint_rollback(sid)
             return Response({"error": "the balance cannot be negative"}, status=400)
         return Response(ExpensesSerializer(expenses).data, status=201)
