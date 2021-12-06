@@ -1,5 +1,6 @@
 import os
 
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from config.views import init_user
@@ -13,11 +14,25 @@ from .serializer import WalletSerializer
 
 
 class WalletView(APIView):
-    # TODO: получене одного кошелька из query
-    # TODO: PATH запрос на редактирование label
-    @swagger_auto_schema(tags=['Wallet'])
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        tags=['Wallet'],
+        manual_parameters=[
+            openapi.Parameter('wallet_id', openapi.IN_PATH, description='ID кошелька.',
+                              required=True,
+                              type=openapi.TYPE_INTEGER)
+        ]
+    )
     def get(self, request):
         user = init_user(request)
+        data = request.GET
+        if data.get("wallet_id"):
+            try:
+                wallet = Wallet.objects.get(user=user, id=data.get("wallet_id"))
+                return Response(WalletSerializer(wallet, many=False).data, status=201)
+            except Wallet.DoesNotExist:
+                return Response({"error": "Wallet does not exist"}, status=404)
         wallets = Wallet.objects.filter(user=user)
         return Response(WalletSerializer(wallets, many=True).data, status=201)
 
@@ -58,10 +73,43 @@ class WalletView(APIView):
 
         return Response(status=201)
 
+    @swagger_auto_schema(tags=['Wallet'],
+                         request_body=openapi.Schema(
+                             type=openapi.TYPE_OBJECT,
+                             required=['wallet_id'],
+                             properties={
+                                 'wallet_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                 'label': openapi.Schema(type=openapi.TYPE_STRING),
+                             },
+                         ),
+                         )
+    def path(self, request):
+        user = init_user(request)
+        data = request.data
+        try:
+            wallet = Wallet.objects.get(id=data.get("wallet_id"), user=user)
+            wallet.label = data.get("label", wallet.label)
+            wallet.save()
+            return Response(WalletSerializer(wallet, many=False).data, status=201)
+        except Wallet.DoesNotExist:
+            return Response({"error": "Wallet does not exist"}, status=404)
+
 
 class TransactionView(APIView):
-    # TODO: POST запрос натянуть swagger
+    permission_classes = [IsAuthenticated]
     # TODO: GET запрос на просмотр статуса транзакции
+
+    @swagger_auto_schema(tags=['Transaction'],
+                         request_body=openapi.Schema(
+                             type=openapi.TYPE_OBJECT,
+                             required=['wallet_id'],
+                             properties={
+                                 'wallet_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                 'amount': openapi.Schema(type=openapi.TYPE_STRING),
+                                 'address': openapi.Schema(type=openapi.TYPE_STRING),
+                             },
+                         ),
+                         )
     def post(self, request):
         user = init_user(request)
         data = request.data
@@ -69,7 +117,11 @@ class TransactionView(APIView):
             amount = float(data.get("amount"))
         except (ValueError, TypeError):
             return Response({"error": "Invalid data"}, status=400)
-        result = send_btc(user, amount, data.get("address"))
+        try:
+            wallet = Wallet.objects.get(id=data.get("wallet_id"), user=user)
+        except Wallet.DoesNotExist:
+            return Response({"error": "Wallet does not exist"}, status=404)
+        result = send_btc(wallet, amount, data.get("address"))
         if result == 'success':
             return Response({
                 "message": result

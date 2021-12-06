@@ -11,3 +11,4 @@ cache
 env
 venv
 demo.py
+log.txt

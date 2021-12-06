@@ -54,17 +54,27 @@ my_key = PrivateKeyTestnet(wif=wif)
 test_key = PrivateKeyTestnet(wif="KxN6jvhrFuvtmLEBnwGyhRQYSV94uk6L6ZwcX8z5g2GJQaTR7QDs")
 
 # Количество долларов перевода, можно поменять на btc
-money = 0.1
-print(test_key.get_balance())
+money = 10
+print(my_key.address)
+print(my_key.get_balance())
+print(my_key.get_transactions())
 # Кошелек куда будут переведены деньги
 wallet = test_key.address
 
 # Коммисия перевода, если поставить слишком маленькую, то транзакцию не примут
 # И чем больше коммисия, тем быстрее пройдет перевод
 fee = 5
-
+print(wallet)
 # Генерация транзакции
 tx_hash = my_key.create_transaction([(wallet, money, 'usd')], fee=fee, absolute_fee=True)
-url = 'https://blockchain.info/pushtx'
-r = requests.post(url, data={'tx': tx_hash})
-print(r.text)
+print(tx_hash)
+# url = 'https://blockchain.info/pushtx'
+# r = requests.post(url, data={'tx': tx_hash})
+# data = {
+#     'tx_hex': tx_hash,
+#     'coin_symbol': 'btc-testnet',
+# }
+#
+# response = requests.post('https://live.blockcypher.com/bcy/pushtx/', data=data)
+# print(response.text)
+# print(response.json())

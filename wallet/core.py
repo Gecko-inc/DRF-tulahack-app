@@ -2,7 +2,7 @@ from bipwallet.utils import HDPrivateKey, HDKey, Wallet
 import requests
 from bit import PrivateKey
 from django.conf import settings
-from account.models import User
+from .models import Wallet as UserWallet
 import qrcode
 
 
@@ -30,11 +30,11 @@ def gen_address(index: int) -> list:
     return [address, str(wif)]
 
 
-def send_btc(user: User, amount: float, address: str):
+def send_btc(wallet: UserWallet, amount: float, address: str):
     # TODO: разобраться с fee
     try:
         fee = 5
-        key = PrivateKey(wif=user.wif)
+        key = PrivateKey(wif=wallet.wif)
         tx_hash = key.create_transaction([(address, amount, 'btc')], fee=fee, absolute_fee=True)
         url = 'https://blockchain.info/pushtx'
         requests.post(url, data={'tx': tx_hash})
